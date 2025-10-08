@@ -18,7 +18,7 @@ jobs:
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '15.4'  # 使用稳定版本而不是 beta
+        xcode-version: '16.4'  # 使用稳定版本而不是 beta
 
     - name: List available schemes and destinations
       run: |
@@ -63,7 +63,7 @@ jobs:
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '15.4'
+        xcode-version: '16.4'
 
     - name: Build macOS App (SFM)
       run: |
