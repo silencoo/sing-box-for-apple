@@ -10,7 +10,7 @@ jobs:
     
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
@@ -33,7 +33,7 @@ jobs:
           -exportOptionsPlist ExportOptions.plist
           
     - name: Upload IPA
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: sing-box-ios.ipa
         path: build/*.ipa
