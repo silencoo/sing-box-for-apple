@@ -3,38 +3,80 @@ name: Build sing-box iOS App
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build:
+  build-ios:
+    name: Build iOS (SFI)
     runs-on: macos-latest
-    
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      
+
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
-      
+      with:
+        xcode-version: '15.4'  # 使用稳定版本而不是 beta
+
+    - name: List available schemes and destinations
+      run: |
+        echo "Available schemes:"
+        xcodebuild -project sing-box.xcodeproj -list
+        echo "Available destinations for SFI:"
+        xcodebuild -project sing-box.xcodeproj -scheme SFI -showdestinations
+
     - name: Build iOS App (SFI)
       run: |
         xcodebuild -project sing-box.xcodeproj \
           -scheme SFI \
           -configuration Release \
-          -sdk iphoneos \
+          -destination 'generic/platform=iOS' \
+          -archivePath build/SFI.xcarchive \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
+          DEVELOPMENT_TEAM="" \
           archive
-          
-    - name: Export IPA
+
+    - name: Export iOS IPA
       run: |
         xcodebuild -exportArchive \
           -archivePath build/SFI.xcarchive \
           -exportPath build \
           -exportOptionsPlist ExportOptions.plist
-          
-    - name: Upload IPA
+
+    - name: Upload iOS IPA
       uses: actions/upload-artifact@v4
       with:
-        name: sing-box-ios.ipa
+        name: sing-box-iOS.ipa
         path: build/*.ipa
 
+  build-macos:
+    name: Build macOS (SFM)
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.4'
+
+    - name: Build macOS App (SFM)
+      run: |
+        xcodebuild -project sing-box.xcodeproj \
+          -scheme SFM \
+          -configuration Release \
+          -destination 'platform=macOS' \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          build
+
+    - name: Upload macOS App
+      uses: actions/upload-artifact@v4
+      with:
+        name: sing-box-macOS.app
+        path: build/Release/*.app
